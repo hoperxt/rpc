@@ -4,13 +4,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ *
+ */
 public class Server {
 
     //存放响应线程
@@ -22,7 +24,7 @@ public class Server {
 
     public static void main(String[] args) throws IOException {
         Server server = new Server();
-        server.registryClass(Hello.class, HelloImpl.class);
+        server.registryClass(Hello.class, HelloImpl.class);     //相当于发布一个RPC接口
         server.start();
     }
 
@@ -35,14 +37,14 @@ public class Server {
         System.out.println("服务端启动");
         ServerSocket socket = new ServerSocket(8000);
         while (true) {
-            Socket client = socket.accept();
-            executor.execute(new ServiceTask(client));
+            Socket client = socket.accept();    //阻塞，等待连接，可以考虑换成NIO的形式
+            executor.execute(new ServiceTask(client));      //
         }
     }
 
     private static class ServiceTask implements Runnable {
 
-        Socket clent = null;
+        Socket clent = null;//一个线程对应一个客户端请求
 
         public ServiceTask(Socket client) {
             this.clent = client;
